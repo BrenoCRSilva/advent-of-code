@@ -27,8 +27,8 @@ func ParseInput(input string) ([]int, [][]Map) {
 	}
 	for j := 1; j < len(document); j++ {
 		mapLines := strings.Split(document[j], "\n")[1:]
+		var ranges []Map
 		for _, line := range mapLines {
-			var ranges []Map
 			fields := strings.Split(line, " ")
 			source, _ := strconv.Atoi(fields[1])
 			destination, _ := strconv.Atoi(fields[0])
