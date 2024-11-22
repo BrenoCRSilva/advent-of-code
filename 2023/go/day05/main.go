@@ -2,8 +2,8 @@ package main
 
 import (
 	_ "embed"
+	"fmt"
 	"log"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -13,7 +13,6 @@ var input string
 
 func init() {
 	input = strings.TrimRight(input, "\n")
-	input = strings.TrimSpace(input)
 	if len(input) == 0 {
 		log.Fatal("input.txt is empty")
 	}
@@ -21,16 +20,33 @@ func init() {
 
 func main() {
 	listOfSeeds, listOfMapBlocks := parseInput(input)
-	closest := getClosestLocation(listOfSeeds, listOfMapBlocks)
-	println(closest)
+	fmt.Println("Part 1:", getPart1Location(listOfSeeds, listOfMapBlocks))
+	fmt.Println("Part 2:", getPart2Location(listOfSeeds, listOfMapBlocks))
+
 }
 
-func getClosestLocation(listOfSeeds []int, listOfMapBlocks [][]Map) int {
-	closest := math.MaxInt
+func getPart1Location(listOfSeeds []int, listOfMapBlocks [][]Map) int {
+	var closest int
 	for _, seed := range listOfSeeds {
 		location := getMap(seed, listOfMapBlocks)
-		if location < closest {
+		if closest == 0 || location < closest {
 			closest = location
+		}
+	}
+	return closest
+}
+
+func getPart2Location(listOfSeeds []int, listOfMapBlocks [][]Map) int {
+	//too slow
+	var closest int
+	for i := 0; i < len(listOfSeeds); i += 2 {
+		r := i + 1
+		for j := 0; j < listOfSeeds[r]; j++ {
+			seed := listOfSeeds[i] + j
+			location := getMap(seed, listOfMapBlocks)
+			if closest == 0 || location < closest {
+				closest = location
+			}
 		}
 	}
 	return closest
@@ -68,7 +84,7 @@ func getMap(seed int, listOfMapBlocks [][]Map) int {
 	locations := seed
 	for _, block := range listOfMapBlocks {
 		for _, b := range block {
-			if seed >= b.source && seed <= b.source+b.count {
+			if b.source <= locations && locations < b.source+b.count {
 				locations = b.destination + (locations - b.source)
 				break
 			}
