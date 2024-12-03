@@ -30,9 +30,8 @@ func parseInput(input string) [][]int {
 	return numbers
 }
 
-func A(nLine []int) (int, int) {
+func A(nLine []int) int {
 	p1 := nLine[len(nLine)-1]
-	p2 := nLine[0]
 	base := nLine
 	for i := 1; i < len(nLine); i++ {
 		lastIdx := len(nLine) - i
@@ -41,19 +40,18 @@ func A(nLine []int) (int, int) {
 			lower[j] = base[j+1] - base[j]
 		}
 		p1 += lower[lastIdx-1]
-		p2 -= lower[0]
 		base = lower
 	}
-	return p1, p2
+	return p1
 }
 
 func B(numbers [][]int) (int, int) {
 	var result1 int
 	var result2 int
 	for i := 0; i < len(numbers); i++ {
-		p1, p2 := A(numbers[i])
+		p1 := A(numbers[i])
 		result1 += p1
-		result2 += p2
+		// result2 += p2
 	}
 	return result1, result2
 }

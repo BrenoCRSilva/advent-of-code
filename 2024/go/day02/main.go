@@ -12,7 +12,8 @@ var input string
 
 func main() {
 	numMatrix := parseInput(input)
-	fmt.Println(part1(numMatrix))
+	fmt.Println(getSafeReports(numMatrix))
+	fmt.Println(getDampenedReports(numMatrix))
 }
 
 func parseInput(input string) [][]int {
@@ -29,30 +30,44 @@ func parseInput(input string) [][]int {
 	return numMatrix
 }
 
-func part1(numMatrix [][]int) int {
+func isSafe(list []int) bool {
+	t := 1
+	if list[0] > list[1] {
+		t = -1
+	}
+	for i := 0; i < len(list)-1; i++ {
+		a := list[i]
+		b := list[i+1]
+		if a*t < b*t || (a-b)*t > 3 || (a-b)*t < 1 {
+			return false
+		}
+	}
+	return true
+}
+
+func getSafeReports(numMatrix [][]int) int {
 	count := 0
-	for i := 0; i < len(numMatrix); i++ {
-		countFlag := false
-		for j := 0; j < len(numMatrix[i])-1; j++ {
-			diff := numMatrix[i][j] - numMatrix[i][j+1]
-			if numMatrix[i][0] > numMatrix[i][1] {
-				if numMatrix[i][j] > numMatrix[i][j+1] && diff <= 3 && diff >= 1 {
-					countFlag = true
-				} else {
-					countFlag = false
-					break
-				}
-			} else if numMatrix[i][0] < numMatrix[i][1] {
-				if numMatrix[i][j] < numMatrix[i][j+1] && diff >= -3 && diff <= -1 {
-					countFlag = true
-				} else {
-					countFlag = false
+	for _, list := range numMatrix {
+		if isSafe(list) {
+			count++
+		}
+	}
+	return count
+}
+
+func getDampenedReports(numMatrix [][]int) int {
+	count := 0
+	for _, list := range numMatrix {
+		if isSafe(list) {
+			count++
+		} else {
+			for i := 0; i < len(list); i++ {
+				newList := append(list[:i], list[i+1:]...)
+				if isSafe(newList) {
+					count++
 					break
 				}
 			}
-		}
-		if countFlag {
-			count++
 		}
 	}
 	return count
