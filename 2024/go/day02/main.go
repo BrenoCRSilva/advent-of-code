@@ -30,15 +30,26 @@ func parseInput(input string) [][]int {
 	return numMatrix
 }
 
-func isSafe(list []int) bool {
-	t := 1
-	if list[0] > list[1] {
-		t = -1
-	}
+func isSafeHigher(list []int) bool {
 	for i := 0; i < len(list)-1; i++ {
 		a := list[i]
 		b := list[i+1]
-		if a*t < b*t || (a-b)*t > 3 || (a-b)*t < 1 {
+		if a-b <= 3 && a-b >= 1 {
+			continue
+		} else {
+			return false
+		}
+	}
+	return true
+}
+
+func isSafeLower(list []int) bool {
+	for i := 0; i < len(list)-1; i++ {
+		a := list[i]
+		b := list[i+1]
+		if a-b >= -3 && a-b <= -1 {
+			continue
+		} else {
 			return false
 		}
 	}
@@ -48,22 +59,34 @@ func isSafe(list []int) bool {
 func getSafeReports(numMatrix [][]int) int {
 	count := 0
 	for _, list := range numMatrix {
-		if isSafe(list) {
+		if isSafeHigher(list) || isSafeLower(list) {
 			count++
 		}
 	}
 	return count
 }
 
+func dampener(list []int, id int) []int {
+	dampened := make([]int, 0)
+	for i, l := range list {
+		if i == id {
+			continue
+		}
+		dampened = append(dampened, l)
+	}
+	return dampened
+}
+
 func getDampenedReports(numMatrix [][]int) int {
 	count := 0
 	for _, list := range numMatrix {
-		if isSafe(list) {
+		if isSafeHigher(list) || isSafeLower(list) {
 			count++
+			continue
 		} else {
-			for i := 0; i < len(list); i++ {
-				newList := append(list[:i], list[i+1:]...)
-				if isSafe(newList) {
+			for j := 0; j < len(list); j++ {
+				dampened := dampener(list, j)
+				if isSafeHigher(dampened) || isSafeLower(dampened) {
 					count++
 					break
 				}
